@@ -12,11 +12,11 @@ void update_display() {
   static led_mask_t prev_mask = 0;
   
   if (prev_mask != curr_mask) {
-    for (int i = 0; i < LED_COUNT; i++) {
+    for (unsigned short i = 0; i < LED_COUNT; i++) {
       if (LEDS[i] == LW) {
         continue;
       }
-      digitalWrite(LEDS[i], curr_mask & (1 << i+1));
+      digitalWrite(LEDS[i], curr_mask & (1 << (i+1)));
     }
 
     prev_mask = curr_mask;
@@ -48,15 +48,16 @@ void pulse_bag() {
     pulse_intensity = 0;
     pulse_end = true;
   }
-  
+
+  #ifdef ARDUINO_AVR_UNO
   analogWrite(LW, pulse_intensity);
+  #elif ARDUINO_ARCH_ESP32
+  ledcWrite(LW_PWM_CHAN, pulse_intensity);
+  #endif
 }
 
 boolean async_wait(time_millis *last_time, time_millis wait_time) {
   time_millis curr_time = millis();
-  if (curr_time - *last_time < 0) {
-    *last_time = 0;
-  }
   if (curr_time - *last_time < wait_time) {
     return true;
   }
@@ -67,3 +68,4 @@ boolean async_wait(time_millis *last_time, time_millis wait_time) {
 led_mask_t random_mask() {
   return 1 << random(1, 4);
 }
+
