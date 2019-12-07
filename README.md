@@ -1,2 +1,5 @@
 # Led To Bag
-First project for the IoT class.
+
+(University project)
+
+First project for the Embedded Systems Programming class.
